@@ -16,6 +16,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import org.tensorflow.lite.Interpreter
 
 class RegistrationActivity : AppCompatActivity() {
 
@@ -30,7 +31,7 @@ class RegistrationActivity : AppCompatActivity() {
 
         requestCameraPermission()
 
-        binding.buttonCaptureFace.setOnClickListener {
+        binding.buttonRegister.setOnClickListener {
             if (detectedFaceBitmap != null) {
                 showUserInfoDialog()
             } else {
@@ -51,6 +52,7 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
+    @androidx.camera.core.ExperimentalGetImage
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
@@ -163,5 +165,31 @@ class RegistrationActivity : AppCompatActivity() {
         yuvImage.compressToJpeg(android.graphics.Rect(0, 0, image.width, image.height), 100, out)
         val imageBytes = out.toByteArray()
         return android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    }
+
+    private fun getFaceEmbedding(bitmap: Bitmap): FloatArray {
+        val tfliteModel = assets.open("facenet_512.tflite").use { input ->
+            val model = ByteArray(input.available())
+            input.read(model)
+            model
+        }
+        val interpreter = Interpreter(tfliteModel)
+
+        // Preprocess bitmap to 160x160 and normalize
+        val inputImage = Bitmap.createScaledBitmap(bitmap, 160, 160, true)
+        val input = Array(1) { Array(160) { Array(160) { FloatArray(3) } } }
+        for (y in 0 until 160) {
+            for (x in 0 until 160) {
+                val pixel = inputImage.getPixel(x, y)
+                input[0][y][x][0] = ((pixel shr 16 and 0xFF) - 127.5f) / 128f
+                input[0][y][x][1] = ((pixel shr 8 and 0xFF) - 127.5f) / 128f
+                input[0][y][x][2] = ((pixel and 0xFF) - 127.5f) / 128f
+            }
+        }
+
+        val embedding = Array(1) { FloatArray(512) }
+        interpreter.run(input, embedding)
+        interpreter.close()
+        return embedding[0]
     }
 }

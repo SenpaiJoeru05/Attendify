@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <!-- Camera preview placeholder -->
-    <FrameLayout
+    <androidx.camera.view.PreviewView
         android:id="@+id/cameraPreview"
         android:layout_width="0dp"
         android:layout_height="300dp"
@@ -16,13 +16,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp"/>
 
+    <!-- Status TextView -->
+    <TextView
+        android:id="@+id/textStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:textColor="#FFF"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/cameraPreview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
     <!-- Name input -->
     <EditText
-        android:id="@+id/editTextName"
+        android:id="@+id/editName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Full Name"
-        app:layout_constraintTop_toBottomOf="@id/cameraPreview"
+        app:layout_constraintTop_toBottomOf="@id/textStatus"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"
@@ -31,11 +46,11 @@
 
     <!-- Info input -->
     <EditText
-        android:id="@+id/editTextInfo"
+        android:id="@+id/editId"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Additional Info"
-        app:layout_constraintTop_toBottomOf="@id/editTextName"
+        app:layout_constraintTop_toBottomOf="@id/editName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp"
@@ -48,7 +63,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Register Face"
-        app:layout_constraintTop_toBottomOf="@id/editTextInfo"
+        app:layout_constraintTop_toBottomOf="@id/editId"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"
